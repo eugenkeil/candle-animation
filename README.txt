@@ -4,6 +4,8 @@ by using finite automata.
 
 I might at some point add explanations as to how the code works, but
 for now, please enjoy the candlelight.
+See a demo here:
+https://rawgit.com/eugenkeil/candle-animation/master/candle.html
 
 There are still a lot of things one could improve, obviously.
 - Making the colors more realistic
