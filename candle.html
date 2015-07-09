@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  <head>
+  <meta charset="utf-8">
+  <title>A candle in the dark</title>
+
+  
+<script>
+
+// set up and initiaise global variables
+var c;
+var ctx;
+
+window.onload=function(){
+	c = document.getElementById('tafel');
+	ctx = c.getContext('2d');
+	
+	// Properties for drawing the wick
+	ctx.globalCompositeOperation="destination-over";
+	ctx.strokeStyle="rgba(155,0,0,1)";
+	ctx.lineWidth=3;
+}
+
+
+
+
+// main animation function
+function candleFlame(){
+
+var n,m; 
+var r,g,b,a;  // color values
+var z;
+
+// size of candle animation
+var dimX = 40;
+var dimY = 110;
+
+
+ctx.clearRect(0,0,200,200);
+
+
+// ------- making the first layer of animation --------
+var layer1 = ctx.createImageData(dimX, dimY);
+
+var state = [];
+for(var n=0;n<dimX;n++) state[n]=0;
+
+
+
+for(m=dimY-1;m>=0;m--){
+	for(n=0;n<dimX;n++){
+		if(m>=dimY-1) {
+		// initialize lower boundary
+			if(n>10 && n < 30) r = 255; else r=0;
+			g=r;
+			b=r;
+			a=255;
+		} else {
+			if(n>0 && n < dimX){
+				r = Math.round(1/3*(layer1.data[4*dimX*(m+1)+4*n+0]
+					+layer1.data[4*dimX*(m+1)+4*(n-1)+0]+layer1.data[4*dimX*(m+1)+4*(n+1)+0]))+state[n];
+				g=r;
+				b=Math.floor(r/2);
+				a=Math.min(255,10*(110-m)); 
+				if(r<200) state[n]-=Math.floor(2*Math.random());
+				if(r<160 && r>70) state[n]+=Math.floor(2*Math.random()); 
+			} else {
+				r=0;
+				g=0;
+				b=0;
+				a=255;
+			}
+		}
+		// set color at data-point (n,m)
+		layer1.data[4*dimX*m+4*n+0] = r;
+		layer1.data[4*dimX*m+4*n+1] = g;
+		layer1.data[4*dimX*m+4*n+2] = b;
+		layer1.data[4*dimX*m+4*n+3] = a;
+	}
+}
+
+
+// put this line back in, if you want to see the original candle animation without two layers
+//ctx.putImageData(layer1, 50, 50);
+
+
+
+
+// --------------- add second layer -------------------
+
+var layer2 = ctx.createImageData(dimX, dimY);
+
+
+state = [];
+for(var n=0;n<dimX;n++) state[n]=0;
+
+
+for(m=dimY-1;m>0;m--){
+	for(n=0;n<dimX;n++){
+		if(m>=dimY-1) {
+			// initialize lower boundary
+			if(n>10 && n < 30) r = 255; else r=0;
+			g=r;
+			b=r;
+			a=255;
+		} else {
+			if(n>0 && n < dimX){
+				r = Math.round(1/3*(layer2.data[4*dimX*(m+1)+4*n+0]
+					+layer2.data[4*dimX*(m+1)+4*(n-1)+0]+layer2.data[4*dimX*(m+1)+4*(n+1)+0]))+state[n];
+				g=0;
+				b=Math.min(255,r*2);
+				a=Math.min(255,10*(110-m)); 
+				if(r<150) state[n]-=Math.floor(2*Math.random());
+				if(r<120 && r>70) state[n]+=Math.floor(2*Math.random()); 
+			} else {
+				r=0;
+				g=0;
+				b=0;
+				a=255;
+			}
+		}
+		// update/add color at data-point (n,m)
+		layer2.data[4*dimX*m+4*n+0] = Math.max(r,layer1.data[4*dimX*m+4*n+0]);
+		layer2.data[4*dimX*m+4*n+1] = Math.max(g,layer1.data[4*dimX*m+4*n+1]);
+		layer2.data[4*dimX*m+4*n+2] = Math.min(200,Math.max(b,layer1.data[4*dimX*m+4*n+2]));
+		layer2.data[4*dimX*m+4*n+3] = Math.max(a,layer1.data[4*dimX*m+4*n+3]);
+	}
+}
+
+// draw candle on canvas
+ctx.putImageData(layer2, 100, 50);
+
+// adding a red wick
+ctx.beginPath();
+ctx.moveTo(120,160);
+ctx.bezierCurveTo(120,130,125,140,120,140);
+ctx.stroke();
+
+// update only every 100ms to achieve candle 'break' effect
+window.setTimeout(function (){candleFlame()},100);
+}
+
+</script>
+
+</head>
+  
+
+<body style="background-color: black;">
+  
+<button onclick="candleFlame()"> Turn candle on!</button> <br>
+<canvas id="tafel" width="200" height="200">Your browser doesn't support the canvas element!</canvas> 
+
+</body>
+</html>
