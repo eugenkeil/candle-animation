@@ -2,6 +2,8 @@ This is Javascript candle animation that I wrote in 2014,
 when I was playing around with creating graphics on the canvas element
 by using finite automata.
 
+Demo here: http://www.ekeil.de/program/animations/animations.html
+
 I might at some point add explanations as to how the code works, but
 for now, please enjoy the candlelight.
 
